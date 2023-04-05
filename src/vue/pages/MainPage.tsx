@@ -7,82 +7,84 @@ import ModalDelete from '../components/ModalDelete';
 import { Delete, Edit } from '@mui/icons-material';
 import { StudentMethodImplement } from '../../data/StudentMethodImplement';
 import { Student } from '../../model/Student';
+import { useSelector, useDispatch } from 'react-redux'
+import { add, remove, all } from '../../data/Store';
+
+
 
 const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'id', headerName: 'Matricule', width: 90 },
     {
-        field: 'firstName',
+        field: 'name',
         headerName: 'First name',
         width: 150,
         editable: true,
     },
     {
-        field: 'lastName',
+        field: 'surname',
         headerName: 'Last name',
         width: 150,
         editable: true,
     },
     {
-        field: 'age',
-        headerName: 'Age',
-        type: 'number',
+        field: 'date',
+        headerName: 'Date Naissance',
+        type: 'string',
         width: 110,
         editable: true,
     },
     {
-        field: 'fullName',
-        headerName: 'Full name',
-        description: 'This column has a value getter and is not sortable.',
-        sortable: false,
-        width: 160,
-        valueGetter: (params: GridValueGetterParams) =>
-            `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+        field: 'filiary',
+        headerName: 'Filiere',
+        type: 'string',
+        width: 110,
+        editable: true,
+    },
+    {
+        field: 'niveau',
+        headerName: 'niveau',
+        type: 'string',
+        width: 110,
+        editable: true,
     },
 ];
 
 const rows = [
-    { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-    { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-    { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-    { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-    { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-    { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-    { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-    { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-    { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
-
-const data = [
-    { id: 1, lastName: 'sdf' }
+    { id: "1", lastName: 'Snow', firstName: 'Jon', age: 35 },
+    { id: "2", lastName: 'Lannister', firstName: 'Cersei', age: 42 },
+    { id: "3", lastName: 'Lannister', firstName: 'Jaime', age: 45 },
+    { id: "4", lastName: 'Stark', firstName: 'Arya', age: 16 },
 ]
+
 
 export default function MainPage() {
     const [student, setStudent] = React.useState([])
+    const [listStudent, setListStudent] = React.useState([{}])
     const [open, setOpen] = React.useState(false);
     const [openDelete, setOpenDelete] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleOpenDelete = () => setOpenDelete(true)
     const handleCloseDelete = () => setOpenDelete(false)
+    const dispatcher = useDispatch()
+
+    React.useEffect(() => {
+        // const list = getStudent().length ==0 ? [] : getStudent().map(student => student.toMap())
+        // console.log(getStudent())
+        // setListStudent(list)
+        dispatcher(all())
+    }, [])
 
     const onDelete = () => {
         handleCloseDelete()
     }
 
-    const getStudent = () => { 
+    function getStudent(): Student[] | [] {
         const studentMethod = new StudentMethodImplement()
-        studentMethod.getStudent()
-     }
+        console.log(studentMethod.getStudent())
+        return studentMethod.getStudent()
+    }
 
-     console.log( new Student(
-        "Ouandji",
-        "Thierry",
-        "10/04/2002",
-        "19sci2148",
-        "informatique",
-        "master1"
-      ),)
-     getStudent()
 
     return (
         <div>
@@ -104,7 +106,7 @@ export default function MainPage() {
                         student.length > 0 ?
                             <Typography >
                                 {
-                                    student.length === 1?
+                                    student.length === 1 ?
                                         <IconButton color="primary" aria-label="upload picture" component="label" onClick={handleOpenDelete}>
                                             <Edit />
                                         </IconButton>
@@ -119,7 +121,7 @@ export default function MainPage() {
 
                 </div>
                 <DataGrid
-                    rows={rows}
+                    rows={[]}
                     columns={columns}
                     initialState={{
                         pagination: {
@@ -140,7 +142,7 @@ export default function MainPage() {
                     }}
                 />
             </Box>
-            <ModalForm open={open} handleClose={handleClose} />
+            <ModalForm open={open} handleClose={handleClose} onSubmit={() => dispatcher(add())} />
             <ModalDelete open={openDelete} handleClose={handleCloseDelete} onDelete={onDelete} />
         </div>
 

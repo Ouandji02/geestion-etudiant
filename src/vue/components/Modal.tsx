@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
 import { Student } from '../../model/Student';
+import { StudentMethodImplement } from '../../data/StudentMethodImplement';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -23,15 +24,19 @@ const style = {
 type Props = {
     open: boolean,
     handleClose: () => void,
+    onSubmit : () => void
 }
 
 
-export default function ModalForm({ open, handleClose }: Props) {
+export default function ModalForm({ open, handleClose, onSubmit }: Props) {
 
     const [student, setStudent] = React.useState(new Student('','','','','',''))
 
-    const onCreate = () => {
-        
+    const onCreate = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        const studentMethod = new StudentMethodImplement()
+        studentMethod.onCreateStudent(student)
+        onSubmit()
      }
 
     const onEdit = () => { }
@@ -41,8 +46,6 @@ export default function ModalForm({ open, handleClose }: Props) {
         var value = e.target.value
         setStudent(prev => ({...prev, [name] : value}))
     }
-
-    console.log(student)
 
     return (
         <div>
@@ -56,7 +59,7 @@ export default function ModalForm({ open, handleClose }: Props) {
                     <Typography id="modal-modal-title" variant="h4" component="h2">
                         Formulaire
                     </Typography>
-                    <form action="">
+                    <form method='post' onSubmit={onCreate} >
                         <Box mt={2}>
                             Entrer le nom
                             <br /><TextField fullWidth name="name" placeholder='Entrer le nom' onChange={onChange} />

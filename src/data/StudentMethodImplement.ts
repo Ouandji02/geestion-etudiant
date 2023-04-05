@@ -2,23 +2,39 @@ import axios from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
 import { Student } from "../model/Student";
 
-
 export class StudentMethodImplement {
-
-  getStudent() : Student[] | [] {
+  getStudent(): Student[] {
+    var listStudents: Student[] = [];
     axios.get("/students").then(function (response) {
       const students: Student[] = response.data.map((student: any) =>
         new Student("", "", "", "", "", "").fromJson(student)
       );
-      return students
+      listStudents = students;
+      console.log(students);
     });
-    return []
+
+    return listStudents;
+  }
+
+  onCreateStudent = (student: Student) => {
+    console.log(student);
+    axios
+      .post("/addstudents", student)
+      .then((response) => console.log("reussi"))
+      .catch((e) => console.log(e));
   };
 
-  onCreateStudent = (student : Student) =>{}
+  onEdit = (student: Student) => {
+    axios
+      .put("/onedit", student)
+      .then((response) => console.log("reussi"))
+      .catch((e) => console.log(e));
+  };
 
-  onEdit = (student : Student) => {}
-
-  onDelete = (student : Student) => {}
-  
+  onDelete = (student: Student) => {
+    axios
+      .delete("ondelete")
+      .then((response) => console.log("reussi"))
+      .catch((e) => console.log(e));
+  };
 }

@@ -34,5 +34,17 @@ export class Student {
       json.niveau
    )
   }
+
+  toMap  = () => {
+    
+    return {
+      matricule : this.matricule,
+      name : this.name,
+      surname : this.surname,
+      date : this.date,
+      filiary : this.filiary,
+      niveau : this.niveau
+    }
+  }
  
 }

@@ -6,6 +6,10 @@ import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
 import { Student } from '../../model/Student';
 import { StudentMethodImplement } from '../../data/StudentMethodImplement';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState, add, addstudents } from '../../data/Store';
+import { LoadingButton } from '@mui/lab';
+import { GridSaveAltIcon } from '@mui/x-data-grid';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -24,19 +28,18 @@ const style = {
 type Props = {
     open: boolean,
     handleClose: () => void,
-    onSubmit : () => void
 }
 
 
-export default function ModalForm({ open, handleClose, onSubmit }: Props) {
+export default function ModalForm({ open, handleClose }: Props) {
 
     const [student, setStudent] = React.useState(new Student('','','','','',''))
+    const dispatcher = useDispatch<AppDispatch>()
+    const  status  = useSelector((state: RootState)=> state.status)
 
-    const onCreate = (e: FormEvent<HTMLFormElement>) => {
+    const onCreate = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const studentMethod = new StudentMethodImplement()
-        studentMethod.onCreateStudent(student)
-        onSubmit()
+        dispatcher(addstudents(student))
      }
 
     const onEdit = () => { }
@@ -46,7 +49,6 @@ export default function ModalForm({ open, handleClose, onSubmit }: Props) {
         var value = e.target.value
         setStudent(prev => ({...prev, [name] : value}))
     }
-
     return (
         <div>
             <Modal
@@ -74,7 +76,7 @@ export default function ModalForm({ open, handleClose, onSubmit }: Props) {
                         </Box>
                         <Box mt={2}>
                             Entrer le matricule
-                            <br /><TextField fullWidth name="matricule" placeholder='Entrer le matricule' onChange={onChange} />
+                            <br /><TextField fullWidth name="id" placeholder='Entrer le matricule' onChange={onChange} />
                         </Box>
                         <Box mt={2}>
                             Entrer le Telephone
@@ -87,9 +89,14 @@ export default function ModalForm({ open, handleClose, onSubmit }: Props) {
                             <br /><TextField fullWidth name="niveau" placeholder='Entrer le niveau' onChange={onChange} />
                         </Box>
                         <Box mt={2}>
-                            <br /><Button variant="contained" type="submit" color="primary" >
-                                Enregistrer
-                            </Button>
+                            <br /><LoadingButton
+                                loading = {status === "loading"}
+                                loadingPosition="start"
+                                startIcon={<GridSaveAltIcon />}
+                                variant="contained" type="submit" color="primary"
+                            >
+                                Save
+                            </LoadingButton>
                         </Box>
                     </form>
                 </Box>

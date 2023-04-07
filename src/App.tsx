@@ -10,7 +10,7 @@ import {store} from './data/Store';
 export default function App() {
   return (
     <Provider store={store} >
-      <div className="app">
+      <div className="app container">
       <MainPage />
     </div>
     </Provider>

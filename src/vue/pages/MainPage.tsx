@@ -1,97 +1,46 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { Button, IconButton, Stack, Typography } from '@mui/material';
+import { DataGrid, GridCellEditStopParams, GridCellEditStopReasons, GridCellParams, GridColDef, GridValueGetterParams, MuiBaseEvent, MuiEvent } from '@mui/x-data-grid';
+import { Button, Card, CardHeader, IconButton, Stack, Typography } from '@mui/material';
 import ModalForm from '../components/Modal';
 import ModalDelete from '../components/ModalDelete';
 import { Delete, Edit } from '@mui/icons-material';
 import { StudentMethodImplement } from '../../data/StudentMethodImplement';
 import { Student } from '../../model/Student';
 import { useSelector, useDispatch } from 'react-redux'
-import { add, remove, all } from '../../data/Store';
+import { add, remove, RootState, fetchStudents, AppDispatch, deleteStudent } from '../../data/Store';
+import { columns } from '../../model/columns';
 
 
 
-const columns: GridColDef[] = [
-    { field: 'id', headerName: 'Matricule', width: 90 },
-    {
-        field: 'name',
-        headerName: 'First name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'surname',
-        headerName: 'Last name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'date',
-        headerName: 'Date Naissance',
-        type: 'string',
-        width: 110,
-        editable: true,
-    },
-    {
-        field: 'filiary',
-        headerName: 'Filiere',
-        type: 'string',
-        width: 110,
-        editable: true,
-    },
-    {
-        field: 'niveau',
-        headerName: 'niveau',
-        type: 'string',
-        width: 110,
-        editable: true,
-    },
-];
-
-const rows = [
-    { id: "1", lastName: 'Snow', firstName: 'Jon', age: 35 },
-    { id: "2", lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-    { id: "3", lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-    { id: "4", lastName: 'Stark', firstName: 'Arya', age: 16 },
-]
 
 
 export default function MainPage() {
     const [student, setStudent] = React.useState([])
-    const [listStudent, setListStudent] = React.useState([{}])
     const [open, setOpen] = React.useState(false);
     const [openDelete, setOpenDelete] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleOpenDelete = () => setOpenDelete(true)
     const handleCloseDelete = () => setOpenDelete(false)
-    const dispatcher = useDispatch()
+    const dispatcher = useDispatch<AppDispatch>()
+    const listStudents = useSelector((state: RootState) => state.liststudents)
+    const status = useSelector((state: RootState) => state.status)
+    const [val, setVal] = React.useState("")
 
     React.useEffect(() => {
-        // const list = getStudent().length ==0 ? [] : getStudent().map(student => student.toMap())
-        // console.log(getStudent())
-        // setListStudent(list)
-        dispatcher(all())
-    }, [])
+        dispatcher(fetchStudents())
+    }, [dispatcher])
 
     const onDelete = () => {
-        handleCloseDelete()
+        dispatcher(deleteStudent(student[0]))
     }
-
-    function getStudent(): Student[] | [] {
-        const studentMethod = new StudentMethodImplement()
-        console.log(studentMethod.getStudent())
-        return studentMethod.getStudent()
-    }
-
-
     return (
-        <div>
-            <Box sx={{ width: '100%' }} >
-                <Typography variant="h4" align="left" >
-                    Liste des etudiants
-                </Typography>
+        <Card sx={{ p: 10, boxShadow: 10 }} className='app' >
+            <Typography variant="h3" align="left" sx={{ mt: 0, mb: 10 }} >
+                Liste des etudiants
+            </Typography>
+            <Box sx={{ width: '100%', mt: 3, mb: 3 }} >
                 <div style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -121,7 +70,7 @@ export default function MainPage() {
 
                 </div>
                 <DataGrid
-                    rows={[]}
+                    rows={listStudents}
                     columns={columns}
                     initialState={{
                         pagination: {
@@ -131,20 +80,24 @@ export default function MainPage() {
                         },
                     }}
                     pageSizeOptions={[5]}
+                    loading={listStudents.length === 0}
                     checkboxSelection
                     disableRowSelectionOnClick
                     autoHeight
                     onRowSelectionModelChange={(ids) => {
-                        const selectRow = rows.filter(row => row.id === Number(ids[0]));
-                        console.log(ids)
-                        console.log(selectRow)
+                        const selectRow = listStudents.filter(row => row.id === ids[0]);
                         setStudent(selectRow)
+                    }}
+                    isCellEditable={true}
+                    onCellEditStop={(params: GridCellParams, event: MuiEvent<MuiBaseEvent>) => {
+                        console.log(params.value)
                     }}
                 />
             </Box>
-            <ModalForm open={open} handleClose={handleClose} onSubmit={() => dispatcher(add())} />
+            <ModalForm open={open} handleClose={handleClose} />
             <ModalDelete open={openDelete} handleClose={handleCloseDelete} onDelete={onDelete} />
-        </div>
+            
+        </Card>
 
     );
 }

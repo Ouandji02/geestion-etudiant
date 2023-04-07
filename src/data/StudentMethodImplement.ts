@@ -1,20 +1,7 @@
 import axios from "axios";
-import AxiosMockAdapter from "axios-mock-adapter";
 import { Student } from "../model/Student";
 
 export class StudentMethodImplement {
-  getStudent(): Student[] {
-    var listStudents: Student[] = [];
-    axios.get("/students").then(function (response) {
-      const students: Student[] = response.data.map((student: any) =>
-        new Student("", "", "", "", "", "").fromJson(student)
-      );
-      listStudents = students;
-      console.log(students);
-    });
-
-    return listStudents;
-  }
 
   onCreateStudent = (student: Student) => {
     console.log(student);

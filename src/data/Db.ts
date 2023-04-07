@@ -8,6 +8,7 @@ let students : Student[] = [new Student(
   "Thierry",
   "10/04/2002",
   "19sci2148",
+  "677777777",
   "informatique",
   "master1"
 ),]
@@ -64,8 +65,9 @@ mock
 
   mock.onDelete("/ondelete").reply((config) => {
     console.log(students)
-    let { id } = config.params
-    students = students.filter(s => s.id != id)
+    let { ids } = config.params
+    var t = []
+    students = students.filter(s => !ids.includes(s.id))
     return [
       200,
       {

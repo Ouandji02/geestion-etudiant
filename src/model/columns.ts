@@ -16,6 +16,12 @@ export const columns: GridColDef[] = [
         editable: true,
     },
     {
+        field: 'phone',
+        headerName: 'Telephone',
+        width: 150,
+        editable: true,
+    },
+    {
         field: 'date',
         headerName: 'Date Naissance',
         type: 'string',

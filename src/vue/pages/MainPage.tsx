@@ -5,10 +5,9 @@ import { Button, Card, CardHeader, IconButton, Stack, Typography } from '@mui/ma
 import ModalForm from '../components/Modal';
 import ModalDelete from '../components/ModalDelete';
 import { Delete, Edit } from '@mui/icons-material';
-import { StudentMethodImplement } from '../../data/StudentMethodImplement';
 import { Student } from '../../model/Student';
 import { useSelector, useDispatch } from 'react-redux'
-import { add, remove, RootState, fetchStudents, AppDispatch, deleteStudent } from '../../data/Store';
+import { RootState, fetchStudents, AppDispatch, deleteStudent, handleModalForm, handleCloseModalForm, handleCloseModal, handleModal } from '../../data/Store';
 import { columns } from '../../model/columns';
 
 
@@ -17,24 +16,33 @@ import { columns } from '../../model/columns';
 
 export default function MainPage() {
     const [student, setStudent] = React.useState([])
-    const [open, setOpen] = React.useState(false);
-    const [openDelete, setOpenDelete] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const handleOpenDelete = () => setOpenDelete(true)
-    const handleCloseDelete = () => setOpenDelete(false)
     const dispatcher = useDispatch<AppDispatch>()
     const listStudents = useSelector((state: RootState) => state.liststudents)
-    const status = useSelector((state: RootState) => state.status)
-    const [val, setVal] = React.useState("")
+    const { openModalForm, openModal } = useSelector((state: RootState) => state)
 
     React.useEffect(() => {
         dispatcher(fetchStudents())
     }, [dispatcher])
 
     const onDelete = () => {
-        dispatcher(deleteStudent(student[0]))
+        dispatcher(deleteStudent(student))
     }
+
+    const handleCloseDelete = () => dispatcher(handleCloseModal())
+
+    const closeModalForm = () => {
+        dispatcher(handleCloseModalForm())
+    }
+
+    const onUpdate = () => {
+        dispatcher(handleModalForm())
+    }
+
+    const onAdd = () => {
+        setStudent([])
+        dispatcher(handleModalForm())
+    }
+
     return (
         <Card sx={{ p: 10, boxShadow: 10 }} className='app' >
             <Typography variant="h3" align="left" sx={{ mt: 0, mb: 10 }} >
@@ -46,23 +54,26 @@ export default function MainPage() {
                     justifyContent: "space-between",
                 }}
                 >
-                    <Typography align="right">
-                        <Button variant="contained" color="primary" onClick={handleOpen} >
-                            Ajouter un nouvel etudiant
-                        </Button>
-                    </Typography>
+                    {
+                        student.length === 0 ? <Typography align="right">
+                            <Button variant="contained" color="primary" onClick={onAdd} >
+                                Ajouter un nouvel etudiant
+                            </Button>
+                        </Typography> : null
+                    }
+
                     {
                         student.length > 0 ?
                             <Typography >
                                 {
                                     student.length === 1 ?
-                                        <IconButton color="primary" aria-label="upload picture" component="label" onClick={handleOpenDelete}>
+                                        <IconButton color="primary" aria-label="upload picture" component="label" onClick={onUpdate}>
                                             <Edit />
                                         </IconButton>
                                         : null
                                 }
 
-                                <IconButton color="primary" aria-label="upload picture" component="label" onClick={handleOpenDelete}>
+                                <IconButton color="primary" aria-label="upload picture" component="label" onClick={()=>dispatcher(handleModal())}>
                                     <Delete />
                                 </IconButton>
                             </Typography> : null
@@ -85,18 +96,18 @@ export default function MainPage() {
                     disableRowSelectionOnClick
                     autoHeight
                     onRowSelectionModelChange={(ids) => {
-                        const selectRow = listStudents.filter(row => row.id === ids[0]);
+                        const s = listStudents.filter((row : Student) => ids.includes(row.id));
+                        const selectRow = listStudents.filter((row : Student) => ids.includes(row.id));
+                        console.log(s)
                         setStudent(selectRow)
                     }}
-                    isCellEditable={true}
-                    onCellEditStop={(params: GridCellParams, event: MuiEvent<MuiBaseEvent>) => {
-                        console.log(params.value)
-                    }}
+                    
                 />
             </Box>
-            <ModalForm open={open} handleClose={handleClose} />
-            <ModalDelete open={openDelete} handleClose={handleCloseDelete} onDelete={onDelete} />
-            
+
+             <ModalForm open={openModalForm} handleClose={closeModalForm} student1={student[0]} /> 
+            <ModalDelete open={openModal} handleClose={handleCloseDelete} onDelete={onDelete} />
+
         </Card>
 
     );

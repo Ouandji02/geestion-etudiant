@@ -3,6 +3,7 @@ export class Student {
   surname: string | "";
   date: string | "";
   id: string | "";
+  phone : string | ""
   filiary: string | "";
   niveau: string | "";
 
@@ -11,6 +12,7 @@ export class Student {
     surname: string,
     date: string,
     id: string,
+    phone : string,
     filiary: string,
     niveau: string
   ) {
@@ -19,6 +21,7 @@ export class Student {
      this.surname = surname
      this.date = date
      this.id = id
+     this.phone = phone
      this.filiary = filiary
      this.niveau = niveau
   }

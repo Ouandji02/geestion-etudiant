@@ -31,9 +31,10 @@ export const editstudents = createAsyncThunk(
 
 export const deleteStudent = createAsyncThunk(
   "student/deletetask",
-  async (student : Student) => {
-    console.log("delete")
-    const req = await axios.delete("/ondelete", { params: { id: student.id } })
+  async (students : Student[]) => {
+
+    const s = students.map((student : Student)  => student.id)
+    const req = await axios.delete("/ondelete", { params: { ids: s } })
     return req.data
   }
 )
@@ -44,8 +45,23 @@ const studentSlice = createSlice({
     liststudents: [],
     status: "idle",
     error: null,
+    openModalForm : false,
+    openModal : false
   },
-  reducers: {},
+  reducers: {
+    handleModalForm : state => {
+      state.openModalForm = true
+    },
+    handleCloseModalForm : state => {
+      state.openModalForm = false
+    },
+    handleModal : state => {
+      state.openModal = true
+    },
+    handleCloseModal : state => {
+      state.openModal = false
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchStudents.pending, (state) => {
@@ -67,9 +83,24 @@ const studentSlice = createSlice({
         console.log(action.payload)
         state.status = "succeeded";
         state.liststudents =  action.payload.students;
+        state.openModalForm = false
         alert("etudiant ajoute dans la base donnees")
       })
       .addCase(addstudents.rejected, (state, action) => {
+        state.status = "failed";
+        })
+      .addCase(editstudents.pending, (state) => {
+        state.status = "loading";
+        console.log("loading")
+      })
+      .addCase(editstudents.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.status = "succeeded";
+        state.liststudents =  action.payload.students;
+        state.openModalForm = false
+        alert("etudiant modifie dans la base donnees")
+      })
+      .addCase(editstudents.rejected, (state, action) => {
         state.status = "failed";
         alert(action.error.message)
       })
@@ -80,6 +111,7 @@ const studentSlice = createSlice({
         state.status = "succeeded";
         console.log(action.payload.id)
         state.liststudents =  action.payload.students; 
+        state.openModal = false
         alert("etudiant retire de la base de donnees ")
       })
       .addCase(deleteStudent.rejected, (state, action) => {
@@ -89,8 +121,7 @@ const studentSlice = createSlice({
   },
 });
 
-export const { add, remove } = studentSlice.actions;
-
+export const { handleModal, handleModalForm, handleCloseModal, handleCloseModalForm } = studentSlice.actions
 export const store = configureStore({
   reducer: studentSlice.reducer,
 });

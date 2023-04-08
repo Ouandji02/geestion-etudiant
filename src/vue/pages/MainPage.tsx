@@ -7,8 +7,9 @@ import ModalDelete from '../components/ModalDelete';
 import { Delete, Edit } from '@mui/icons-material';
 import { Student } from '../../model/Student';
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, fetchStudents, AppDispatch, deleteStudent, handleModalForm, handleCloseModalForm, handleCloseModal, handleModal } from '../../data/Store';
+import { RootState, fetchStudents, AppDispatch, deleteStudent, handleModalForm, handleCloseModalForm, handleCloseModal, handleModal, handleModalArchieve, addstudentsArchieve, fetchStudentsArchieve } from '../../data/Store';
 import { columns } from '../../model/columns';
+import ModalArchieve from '../components/ModalArchieve';
 
 
 
@@ -18,10 +19,11 @@ export default function MainPage() {
     const [student, setStudent] = React.useState([])
     const dispatcher = useDispatch<AppDispatch>()
     const listStudents = useSelector((state: RootState) => state.liststudents)
-    const { openModalForm, openModal } = useSelector((state: RootState) => state)
+    const { openModalForm, openModal, openModalArchieve, status } = useSelector((state: RootState) => state)
 
     React.useEffect(() => {
         dispatcher(fetchStudents())
+        dispatcher(fetchStudentsArchieve())
     }, [dispatcher])
 
     const onDelete = () => {
@@ -41,6 +43,11 @@ export default function MainPage() {
     const onAdd = () => {
         setStudent([])
         dispatcher(handleModalForm())
+    }
+
+    const onArchieve = () => {
+        dispatcher(addstudentsArchieve(student)).then(res =>  dispatcher(fetchStudents()))
+       
     }
 
     return (
@@ -63,8 +70,16 @@ export default function MainPage() {
                     }
 
                     {
+                        student.length === 0 ? <Typography align="right">
+                            <Button variant="contained" color="secondary" onClick={() => dispatcher(handleModalArchieve())} >
+                                Consulter l'archive
+                            </Button>
+                        </Typography> : null
+                    }
+
+                    {
                         student.length > 0 ?
-                            <Typography >
+                            (<Typography >
                                 {
                                     student.length === 1 ?
                                         <IconButton color="primary" aria-label="upload picture" component="label" onClick={onUpdate}>
@@ -73,11 +88,21 @@ export default function MainPage() {
                                         : null
                                 }
 
-                                <IconButton color="primary" aria-label="upload picture" component="label" onClick={()=>dispatcher(handleModal())}>
+                                <IconButton color="primary" aria-label="upload picture" component="label" onClick={() => dispatcher(handleModal())}>
                                     <Delete />
                                 </IconButton>
+                            </Typography>
+                            ) : null
+                    }
+                    {
+                        student.length > 0 ?
+                            <Typography>
+                                <Button variant={"contained"} color={"secondary"} onClick={onArchieve} >
+                                    Archiver
+                                </Button>
                             </Typography> : null
                     }
+
 
                 </div>
                 <DataGrid
@@ -91,23 +116,22 @@ export default function MainPage() {
                         },
                     }}
                     pageSizeOptions={[5]}
-                    loading={listStudents.length === 0}
+                    loading={status === "loading"}
                     checkboxSelection
                     disableRowSelectionOnClick
                     autoHeight
                     onRowSelectionModelChange={(ids) => {
-                        const s = listStudents.filter((row : Student) => ids.includes(row.id));
-                        const selectRow = listStudents.filter((row : Student) => ids.includes(row.id));
+                        const s = listStudents.filter((row: Student) => ids.includes(row.id));
+                        const selectRow = listStudents.filter((row: Student) => ids.includes(row.id));
                         console.log(s)
                         setStudent(selectRow)
                     }}
-                    
                 />
             </Box>
 
-             <ModalForm open={openModalForm} handleClose={closeModalForm} student1={student[0]} /> 
+            <ModalForm open={openModalForm} handleClose={closeModalForm} student1={student[0]} />
             <ModalDelete open={openModal} handleClose={handleCloseDelete} onDelete={onDelete} />
-
+            <ModalArchieve open={openModalArchieve} handleClose={() => dispatcher(handleModalArchieve())} />
         </Card>
 
     );

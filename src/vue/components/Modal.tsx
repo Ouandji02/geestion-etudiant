@@ -39,17 +39,31 @@ export default function ModalForm({ open, handleClose, student1 = new Student(''
     const status = useSelector((state: RootState) => state.status)
     const listStudents = useSelector((state: RootState) => state.liststudents)
 
+    const nullVerification = (student: Student): boolean => student.date === ""
+        || student.filiary === ""
+        || student.id === ""
+        || student.name === ""
+        || student.niveau === ""
+        || student.phone === ""
+        || student.surname === ""
+
     const onCreate = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        student1.id === '' ? (
-            onAdd()
-        )
-            : dispatcher(editstudents(student))
+
+        if (!nullVerification(student)) {
+            student1.id === '' ? (
+                onAdd()
+            )
+                : dispatcher(editstudents(student))
+        }else {
+            alert("Veuillez verifier votre formulaire")
+        }
+
     }
 
     const onAdd = () => {
         if (listStudents.find((s: Student) => s.id == student.id)) alert("ce matricule a ete deja attribue")
-        else dispatcher(addstudents(student))
+        else dispatcher(addstudents(student)).then(res => setStudent(new Student('', '', '', '', '', '', '')))
     }
 
     const formatDate = (date: string): string => {

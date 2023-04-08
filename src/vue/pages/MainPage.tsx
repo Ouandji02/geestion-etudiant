@@ -12,10 +12,6 @@ import { columns } from '../../model/columns';
 import ModalArchieve from '../components/ModalArchieve';
 import { addstudentsArchieve, deleteStudent, fetchStudents, fetchStudentsArchieve } from '../../data/functionImpl';
 
-
-
-
-
 export default function MainPage() {
     const [student, setStudent] = React.useState([])
     const dispatcher = useDispatch<AppDispatch>()

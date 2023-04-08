@@ -6,9 +6,10 @@ import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
 import { Student } from '../../model/Student';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState, addstudents, editstudents } from '../../data/Store';
+import { AppDispatch, RootState } from '../../data/Store';
 import { LoadingButton } from '@mui/lab';
 import { GridSaveAltIcon } from '@mui/x-data-grid';
+import { addstudents, editstudents } from '../../data/functionImpl';
 
 const style = {
     position: 'absolute' as 'absolute',

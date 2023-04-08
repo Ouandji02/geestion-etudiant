@@ -7,9 +7,10 @@ import ModalDelete from '../components/ModalDelete';
 import { Delete, Edit } from '@mui/icons-material';
 import { Student } from '../../model/Student';
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, fetchStudents, AppDispatch, deleteStudent, handleModalForm, handleCloseModalForm, handleCloseModal, handleModal, handleModalArchieve, addstudentsArchieve, fetchStudentsArchieve } from '../../data/Store';
+import { RootState, AppDispatch, handleModalForm, handleCloseModalForm, handleCloseModal, handleModal, handleModalArchieve,  } from '../../data/Store';
 import { columns } from '../../model/columns';
 import ModalArchieve from '../components/ModalArchieve';
+import { addstudentsArchieve, deleteStudent, fetchStudents, fetchStudentsArchieve } from '../../data/functionImpl';
 
 
 

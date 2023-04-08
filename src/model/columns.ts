@@ -5,13 +5,13 @@ export const columns: GridColDef[] = [
     { field: 'id', headerName: 'Matricule', width: 90 },
     {
         field: 'name',
-        headerName: 'First name',
+        headerName: 'Nom',
         width: 150,
         editable: true,
     },
     {
         field: 'surname',
-        headerName: 'Last name',
+        headerName: 'Prenom',
         width: 150,
         editable: true,
     },

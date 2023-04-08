@@ -86,7 +86,6 @@ const studentSlice = createSlice({
         console.log(action.payload.id);
         state.liststudents = action.payload.students;
         state.openModal = false;
-        alert("etudiant retire de la base de donnees ");
       })
       .addCase(deleteStudent.rejected, (state, action) => {
         state.status = "failed";

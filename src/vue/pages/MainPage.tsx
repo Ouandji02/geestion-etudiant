@@ -47,8 +47,7 @@ export default function MainPage() {
     }
 
     const onArchieve = () => {
-        dispatcher(addstudentsArchieve(student)).then(res =>  dispatcher(fetchStudents()))
-       
+        dispatcher(addstudentsArchieve(student)).then(res =>  dispatcher(deleteStudent(student)))
     }
 
     return (
@@ -129,7 +128,6 @@ export default function MainPage() {
                     }}
                 />
             </Box>
-
             <ModalForm open={openModalForm} handleClose={closeModalForm} student1={student[0]} />
             <ModalDelete open={openModal} handleClose={handleCloseDelete} onDelete={onDelete} />
             <ModalArchieve open={openModalArchieve} handleClose={() => dispatcher(handleModalArchieve())} />
